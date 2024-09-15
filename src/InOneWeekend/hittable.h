@@ -7,7 +7,7 @@ class hitRecord
 public:
     point3 p;
     vec3 normal;
-    double t;
+    double t = 500.0;
     bool frontFace;
 
     void setFaceNormal(const ray& r, const vec3& outwardNormal)
