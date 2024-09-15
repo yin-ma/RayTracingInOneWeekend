@@ -4,31 +4,36 @@
 #include "color.h"
 #include "ray.h"
 #include "vec3.h"
+#include "sphere.h"
+#include "hittable.h"
+#include "hittableList.h"
+#include <memory>
 
 
-bool hitSphere(const point3& center, double radius, const ray& r) {
-    vec3 oc = center - r.origin();
-    auto a = dot(r.direction(), r.direction());
-    auto b = -2.0 * dot(r.direction(), oc);
-    auto c = dot(oc, oc) - radius * radius;
-    auto discriminant = b * b - 4 * a * c;
-    return (discriminant >= 0);
-}
-
-color rayColor(const ray& r)
+color rayColor(const ray& r, const hittable& world)
 {
-    if (hitSphere(point3(0, 0, -1), 0.5, r))
-        return color(1, 0, 0);
-    vec3 unit_direction = normalize(r.direction());
-    double a = 0.5 * (unit_direction.y() + 1.0);
+    hitRecord rec;
+    if (world.hit(r, 0, 100000.0, rec))
+    {
+        return 0.5 * (rec.normal + color(1, 1, 1));
+    }
+
+    vec3 unitDirection = normalize(r.direction());
+    double a = 0.5 * (unitDirection.y() + 1.0);
     return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
 }
 
-int main() {
-
+int main() 
+{
     double aspectRatio = 16.0 / 9.0;
     int imageWidth = 400;
     int imageHeight = int(400 / aspectRatio);
+
+    // world
+    hittableList world;
+    
+    world.add(std::make_shared<sphere>(vec3(0, 0, -1), 0.5));
+    world.add(std::make_shared<sphere>(vec3(0, -100.5, -1), 100));
 
     // Camera
     double focalLength = 1.0;
@@ -45,21 +50,27 @@ int main() {
     vec3 viewportUpperLeft = cameraCenter - vec3(0, 0, focalLength) - viewport_u / 2 - viewport_v / 2;
     vec3 pixel00Loc = viewportUpperLeft + 0.5 * (pixelDelta_u + pixelDelta_v);
 
+    sphere s = sphere(vec3(0, 0, -1), 0.5);
+    hitRecord rec;
+
     // Render
     std::cout << "P3\n" << imageWidth << ' ' << imageHeight << "\n255\n";
-    for (int j = 0; j < imageHeight; j++) {
+    for (int j = 0; j < imageHeight; j++) 
+    {
         std::clog << "\rProgress: " << std::fixed << std::setprecision(2) << (static_cast<double>(j) / imageHeight) * 100 << "% " << std::flush;
-        for (int i = 0; i < imageWidth; i++) {
+        for (int i = 0; i < imageWidth; i++) 
+        {
             vec3 pixelCenter = pixel00Loc + (i * pixelDelta_u) + (j * pixelDelta_v);
             vec3 rayDirection = pixelCenter - cameraCenter;
             ray r(cameraCenter, rayDirection);
 
-            color pixelColor = rayColor(r);
+            color pixelColor = rayColor(r, world);
+
             writeColor(pixelColor);
         }
     }
 
-    std::clog << "\rDone. \n";
+    std::clog << "\rDone.               \n";
 
     return 0;
 }
