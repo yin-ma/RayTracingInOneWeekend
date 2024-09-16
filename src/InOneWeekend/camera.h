@@ -70,9 +70,9 @@ private:
 
         hitRecord rec;
 
-        if (world.hit(r, 0, 500.0, rec))
+        if (world.hit(r, 0.001, 500.0, rec))
         {
-            vec3 direction = randomOnHemisphere(rec.normal);
+            vec3 direction = rec.normal + randomUnitVector();
             return 0.5 * rayColor(ray(rec.p, direction), depth - 1,  world);
         }
 
