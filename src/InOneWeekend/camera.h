@@ -47,7 +47,7 @@ private:
 
 	void initialize() 
     {
-        imageHeight = int(400 / aspectRatio);
+        imageHeight = int(imageWidth / aspectRatio);
 
         double focalLength = 1.0;
         double viewportHeight = 2.0;
