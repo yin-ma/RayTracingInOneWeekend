@@ -2,6 +2,7 @@
 
 #include "hittable.h"
 #include "color.h"
+#include "material.h"
 #include <iostream>
 #include <iomanip>
 
@@ -72,8 +73,11 @@ private:
 
         if (world.hit(r, 0.001, 500.0, rec))
         {
-            vec3 direction = rec.normal + randomUnitVector();
-            return 0.5 * rayColor(ray(rec.p, direction), depth - 1,  world);
+            ray scattered;
+            color attenuation;
+            if (rec.mat->scatter(r, rec, attenuation, scattered))
+                return attenuation * rayColor(scattered, depth - 1, world);
+            return color(0, 0, 0);
         }
 
         vec3 unitDirection = normalize(r.direction());

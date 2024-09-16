@@ -2,11 +2,14 @@
 
 #include "ray.h"
 
+class material;
+
 class hitRecord 
 {
 public:
     point3 p;
     vec3 normal;
+    std::shared_ptr<material> mat;
     double t = 500.0;
     bool frontFace;
 
