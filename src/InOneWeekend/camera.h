@@ -11,6 +11,7 @@ public:
     double aspectRatio = 16.0 / 9.0;
     int imageWidth = 400;
     int imageHeight = 225;
+    int samplesPerPixel = 10;
 
 	void render(const hittable& world) 
     {
@@ -22,12 +23,14 @@ public:
             std::clog << "\rProgress: " << std::fixed << std::setprecision(2) << (static_cast<double>(j) / imageHeight) * 100 << "% " << std::flush;
             for (int i = 0; i < imageWidth; i++)
             {
-                vec3 pixelCenter = pixel00Loc + (i * pixelDelta_u) + (j * pixelDelta_v);
-                vec3 rayDirection = pixelCenter - center;
-                ray r(center, rayDirection);
+                color pixelColor = color(0, 0, 0);
+                for (int sample = 0; sample < samplesPerPixel; sample++)
+                {
+                    ray r = getRay(i, j);
+                    pixelColor += rayColor(r, world);
+                }
 
-                color pixelColor = rayColor(r, world);
-                writeColor(pixelColor);
+                writeColor(pixelColor * 1.0 / samplesPerPixel);
             }
         }
 
@@ -71,6 +74,16 @@ private:
         vec3 unitDirection = normalize(r.direction());
         double a = 0.5 * (unitDirection.y() + 1.0);
         return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
-
 	}
+
+    ray getRay(int i, int j) const
+    {
+        vec3 offset = vec3(randomDouble() - 0.5, randomDouble() - 0.5, 0.0);
+
+        vec3 pixelSample = pixel00Loc + ((i + offset.x()) * pixelDelta_u) + ((j + offset.y()) * pixelDelta_v);
+        vec3 rayOrigin = center;
+        vec3 rayDirection = pixelSample - rayOrigin;
+
+        return ray(rayOrigin, rayDirection);
+    }
 };
