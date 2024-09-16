@@ -11,7 +11,8 @@ public:
     double aspectRatio = 16.0 / 9.0;
     int imageWidth = 400;
     int imageHeight = 225;
-    int samplesPerPixel = 10;
+    int samplesPerPixel = 5;
+    int maxDepth = 10;
 
 	void render(const hittable& world) 
     {
@@ -27,7 +28,7 @@ public:
                 for (int sample = 0; sample < samplesPerPixel; sample++)
                 {
                     ray r = getRay(i, j);
-                    pixelColor += rayColor(r, world);
+                    pixelColor += rayColor(r, maxDepth, world);
                 }
 
                 writeColor(pixelColor * 1.0 / samplesPerPixel);
@@ -62,13 +63,17 @@ private:
         pixel00Loc = viewportUpperLeft + 0.5 * (pixelDelta_u + pixelDelta_v);
     }
 
-	color rayColor(const ray& r, const hittable& world) const 
+	color rayColor(const ray& r, int depth, const hittable& world) const 
 	{
+        if (depth <= 0)
+            return color(0, 0, 0);
+
         hitRecord rec;
 
         if (world.hit(r, 0, 500.0, rec))
         {
-            return 0.5 * (rec.normal + color(1, 1, 1));
+            vec3 direction = randomOnHemisphere(rec.normal);
+            return 0.5 * rayColor(ray(rec.p, direction), depth - 1,  world);
         }
 
         vec3 unitDirection = normalize(r.direction());
