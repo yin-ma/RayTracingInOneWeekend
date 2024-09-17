@@ -15,6 +15,11 @@ public:
     int samplesPerPixel = 5;
     int maxDepth = 10;
 
+    double vfov = 90;
+    vec3 lookfrom = vec3(0, 0, 0);
+    vec3 lookat = vec3(0, 0, -1);
+    vec3 up = vec3(0, 1, 0);
+
 	void render(const hittable& world) 
     {
         initialize();
@@ -44,23 +49,32 @@ private:
     point3 pixel00Loc;    
     vec3   pixelDelta_u;  
     vec3   pixelDelta_v;
+    vec3   u, v, w;
 
 	void initialize() 
     {
         imageHeight = int(imageWidth / aspectRatio);
 
-        double focalLength = 1.0;
-        double viewportHeight = 2.0;
+        center = lookfrom;
+
+        double focalLength = (lookfrom - lookat).length();
+        double theta = degreesToRadians(vfov);
+        double h = std::tan(theta / 2);
+
+        double viewportHeight = 2 * h * focalLength;
         double viewportWidth = viewportHeight * (double(imageWidth) / imageHeight);
 
-        center = point3(0, 0, 0);
-        vec3 viewport_u = vec3(viewportWidth, 0, 0);
-        vec3 viewport_v = vec3(0, -viewportHeight, 0);
+        w = normalize(lookfrom - lookat);
+        u = normalize(cross(up, w));
+        v = cross(w, u);
+
+        vec3 viewport_u = viewportWidth * u;
+        vec3 viewport_v = viewportHeight * -v;
 
         pixelDelta_u = viewport_u / imageWidth;
         pixelDelta_v = viewport_v / imageHeight;
 
-        vec3 viewportUpperLeft = center - vec3(0, 0, focalLength) - viewport_u / 2 - viewport_v / 2;
+        vec3 viewportUpperLeft = center - (focalLength * w) - viewport_u / 2 - viewport_v / 2;
         pixel00Loc = viewportUpperLeft + 0.5 * (pixelDelta_u + pixelDelta_v);
     }
 

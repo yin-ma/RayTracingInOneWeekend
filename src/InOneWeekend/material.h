@@ -74,7 +74,7 @@ public:
 		bool cannotRefract = ri * sinTheta > 1.0;
 		vec3 direction;
 
-		if (cannotRefract )
+		if (cannotRefract || reflectance(cosTheta, ri) > randomDouble())
 			direction = reflect(unitDirection, rec.normal);
 		else
 			direction = refract(unitDirection, rec.normal, ri);

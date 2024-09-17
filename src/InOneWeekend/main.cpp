@@ -16,9 +16,13 @@
 
 int main() 
 {
+
+    double R = std::cos(pi / 4);
+
+
     // world
     hittableList world;
-    
+
     auto materialGround = std::make_shared<lambertian>(color(0.8, 0.8, 0.0));
     auto materialCenter = std::make_shared<lambertian>(color(0.1, 0.2, 0.5));
     auto materialLeft = std::make_shared<dielectric>(1.50);
@@ -29,9 +33,7 @@ int main()
     world.add(std::make_shared<sphere>(point3(0.0, 0.0, -1.2), 0.5, materialCenter));
     world.add(std::make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, materialLeft));
     world.add(std::make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.4, materialBubble));
-
     world.add(std::make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, materialRight));
-
 
     // Camera
     camera cam;
@@ -39,6 +41,11 @@ int main()
     cam.imageWidth      = 400;
     cam.samplesPerPixel = 5;
     cam.maxDepth        = 5;
+    cam.vfov            = 20;
+    cam.lookfrom        = vec3(-2, 2, 1);
+    cam.lookat          = vec3(0, 0, -1);
+    cam.up              = vec3(0, 1, 0);
+
     cam.render(world);
 
     return 0;
