@@ -52,5 +52,44 @@ public:
 
 private:
 	color albedo;
-	float fuzz;
+	double fuzz;
+};
+
+
+
+class dielectric : public material
+{
+public:
+	dielectric(double refractionIndex) : refractionIndex(refractionIndex) {}
+
+	bool scatter(const ray& rIn, const hitRecord& rec, color& attenuation, ray& scattered) const override
+	{
+		attenuation = color(1.0, 1.0, 1.0);
+		double ri = rec.frontFace ? (1.0 / refractionIndex) : refractionIndex;
+
+		vec3 unitDirection = normalize(rIn.direction());
+		double cosTheta = std::fmin(dot(-unitDirection, rec.normal), 1.0);
+		double sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
+
+		bool cannotRefract = ri * sinTheta > 1.0;
+		vec3 direction;
+
+		if (cannotRefract )
+			direction = reflect(unitDirection, rec.normal);
+		else
+			direction = refract(unitDirection, rec.normal, ri);
+
+		scattered = ray(rec.p, direction);
+		return true;
+	}
+
+private:
+	double refractionIndex;
+
+	static double reflectance(double cosine, double refractionIndex)
+	{
+		auto r0 = (1 - refractionIndex) / (1 + refractionIndex);
+		r0 = r0 * r0;
+		return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+	}
 };
