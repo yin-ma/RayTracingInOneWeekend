@@ -129,6 +129,16 @@ inline vec3 unit_vector(const vec3& v)
     return v / v.length();
 }
 
+inline vec3 randomInUnitDisk()
+{
+    while (true)
+    {
+        vec3 p = vec3(randomDouble(-1, 1), randomDouble(-1, 1), 0.0);
+        if (p.length_squared() < 1)
+            return p;
+    }
+}
+
 inline vec3 normalize(const vec3& v) 
 {
     return v / v.length();

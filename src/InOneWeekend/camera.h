@@ -9,16 +9,19 @@
 class camera
 {
 public:
-    double aspectRatio = 16.0 / 9.0;
-    int imageWidth = 400;
-    int imageHeight = 225;
-    int samplesPerPixel = 5;
-    int maxDepth = 10;
+    double aspectRatio  = 16.0 / 9.0;
+    int imageWidth      = 400;
+    int imageHeight     = 225;
+    int samplesPerPixel = 10;
+    int maxDepth        = 10;
 
-    double vfov = 90;
+    double vfov   = 90;
     vec3 lookfrom = vec3(0, 0, 0);
-    vec3 lookat = vec3(0, 0, -1);
-    vec3 up = vec3(0, 1, 0);
+    vec3 lookat   = vec3(0, 0, -1);
+    vec3 up       = vec3(0, 1, 0);
+
+    double defocusAngle = 0;
+    double focusDist = 10;
 
 	void render(const hittable& world) 
     {
@@ -50,6 +53,8 @@ private:
     vec3   pixelDelta_u;  
     vec3   pixelDelta_v;
     vec3   u, v, w;
+    vec3   defocusDisk_u;
+    vec3   defocusDisk_v;
 
 	void initialize() 
     {
@@ -57,11 +62,10 @@ private:
 
         center = lookfrom;
 
-        double focalLength = (lookfrom - lookat).length();
         double theta = degreesToRadians(vfov);
         double h = std::tan(theta / 2);
 
-        double viewportHeight = 2 * h * focalLength;
+        double viewportHeight = 2 * h * focusDist;
         double viewportWidth = viewportHeight * (double(imageWidth) / imageHeight);
 
         w = normalize(lookfrom - lookat);
@@ -74,8 +78,12 @@ private:
         pixelDelta_u = viewport_u / imageWidth;
         pixelDelta_v = viewport_v / imageHeight;
 
-        vec3 viewportUpperLeft = center - (focalLength * w) - viewport_u / 2 - viewport_v / 2;
+        vec3 viewportUpperLeft = center - (focusDist * w) - viewport_u / 2 - viewport_v / 2;
         pixel00Loc = viewportUpperLeft + 0.5 * (pixelDelta_u + pixelDelta_v);
+
+        double defocusRadius = focusDist * std::tan(degreesToRadians(defocusAngle / 2));
+        defocusDisk_u = u * defocusRadius;
+        defocusDisk_v = v * defocusRadius;
     }
 
 	color rayColor(const ray& r, int depth, const hittable& world) const 
@@ -104,9 +112,15 @@ private:
         vec3 offset = vec3(randomDouble() - 0.5, randomDouble() - 0.5, 0.0);
 
         vec3 pixelSample = pixel00Loc + ((i + offset.x()) * pixelDelta_u) + ((j + offset.y()) * pixelDelta_v);
-        vec3 rayOrigin = center;
+        vec3 rayOrigin = (defocusAngle <= 0) ? center : defocusDiskSample() ;
         vec3 rayDirection = pixelSample - rayOrigin;
 
         return ray(rayOrigin, rayDirection);
+    }
+
+    vec3 defocusDiskSample() const
+    {
+        vec3 p = randomInUnitDisk();
+        return center + (p[0] * defocusDisk_u) + (p[1] * defocusDisk_v);
     }
 };

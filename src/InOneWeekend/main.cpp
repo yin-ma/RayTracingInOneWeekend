@@ -17,9 +17,6 @@
 int main() 
 {
 
-    double R = std::cos(pi / 4);
-
-
     // world
     hittableList world;
 
@@ -39,13 +36,15 @@ int main()
     camera cam;
     cam.aspectRatio     = 16.0 / 9.0;
     cam.imageWidth      = 400;
-    cam.samplesPerPixel = 5;
-    cam.maxDepth        = 5;
+    cam.samplesPerPixel = 20;
+    cam.maxDepth        = 10;
     cam.vfov            = 20;
     cam.lookfrom        = vec3(-2, 2, 1);
     cam.lookat          = vec3(0, 0, -1);
     cam.up              = vec3(0, 1, 0);
 
+    cam.defocusAngle    = 10.0;
+    cam.focusDist       = 3.4;
     cam.render(world);
 
     return 0;
