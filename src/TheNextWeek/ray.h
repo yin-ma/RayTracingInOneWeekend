@@ -29,6 +29,8 @@ class ray {
         return orig + t*dir;
     }
 
+    double time() const { return tm; }
+
   private:
     point3 orig;
     vec3 dir;
