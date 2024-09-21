@@ -8,15 +8,15 @@ class aabb {
 public:
 	interval x, y, z;
 
-	aabb() {};
-	
+	aabb() {}
+
 	aabb(const interval& x, const interval& y, const interval& z)
 		: x(x), y(y), z(z) {}
 
 	aabb(const point3& a, const point3& b) {
 		x = (a[0] <= b[0]) ? interval(a[0], b[0]) : interval(b[0], a[0]);
-		z = (a[1] <= b[1]) ? interval(a[1], b[1]) : interval(b[1], a[1]);
-		y = (a[2] <= b[2]) ? interval(a[2], b[2]) : interval(b[2], a[2]);
+		y = (a[1] <= b[1]) ? interval(a[1], b[1]) : interval(b[1], a[1]);
+		z = (a[2] <= b[2]) ? interval(a[2], b[2]) : interval(b[2], a[2]);
 	}
 
 	aabb(const aabb& box0, const aabb& box1) {
@@ -35,7 +35,7 @@ public:
 		const point3& ray_orig = r.origin();
 		const vec3& ray_dir = r.direction();
 
-		for (int axis = 0; axis < 3; axis++ ) {
+		for (int axis = 0; axis < 3; axis++) {
 			const interval& ax = axis_interval(axis);
 			const double adinv = 1.0 / ray_dir[axis];
 
@@ -51,12 +51,9 @@ public:
 				if (t0 < ray_t.max) ray_t.max = t0;
 			}
 
-
-			// check if interval overlap for different axis
 			if (ray_t.max <= ray_t.min)
 				return false;
 		}
-
 		return true;
 
 	}

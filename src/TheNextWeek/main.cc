@@ -11,6 +11,8 @@
 
 #include "rtweekend.h"
 #include "bvh.h"
+
+
 #include "camera.h"
 #include "hittable.h"
 #include "hittable_list.h"
@@ -24,7 +26,6 @@ int main() {
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
     world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
 
-    /* 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
             auto choose_mat = random_double();
@@ -53,7 +54,6 @@ int main() {
             }
         }
     }
-    */
 
     auto material1 = make_shared<dielectric>(1.5);
     world.add(make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
@@ -65,6 +65,7 @@ int main() {
     world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
     world = hittable_list(make_shared<bvh_node>(world));
+
 
     camera cam;
 
