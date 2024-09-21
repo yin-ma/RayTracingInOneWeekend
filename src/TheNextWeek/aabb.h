@@ -8,9 +8,9 @@ class aabb {
 public:
 	interval x, y, z;
 
-	aabb() {}
-
-	aabb(const interval& x, const interval&yx, const interval& z)
+	aabb() {};
+	
+	aabb(const interval& x, const interval& y, const interval& z)
 		: x(x), y(y), z(z) {}
 
 	aabb(const point3& a, const point3& b) {
@@ -35,7 +35,7 @@ public:
 		const point3& ray_orig = r.origin();
 		const vec3& ray_dir = r.direction();
 
-		for (int axis = 0; axis < 3; axis += ) {
+		for (int axis = 0; axis < 3; axis++ ) {
 			const interval& ax = axis_interval(axis);
 			const double adinv = 1.0 / ray_dir[axis];
 
