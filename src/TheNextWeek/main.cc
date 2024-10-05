@@ -306,15 +306,15 @@ void cornell_smoke() {
     box2 = make_shared<rotate_y>(box2, -18);
     box2 = make_shared<translate>(box2, vec3(130, 0, 65));
 
-    world.add(make_shared<constant_medium>(box1, 0.01, color(0, 0, 0)));
+    world.add(make_shared<constant_medium>(box1, 0.01, color(1, 0, 0)));
     world.add(make_shared<constant_medium>(box2, 0.01, color(1, 1, 1)));
 
     camera cam;
 
     cam.aspect_ratio = 1.0;
     cam.image_width = 600;
-    cam.samples_per_pixel = 200;
-    cam.max_depth = 50;
+    cam.samples_per_pixel = 8;
+    cam.max_depth = 8;
     cam.background = color(0, 0, 0);
 
     cam.vfov = 40;
