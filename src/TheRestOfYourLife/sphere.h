@@ -90,6 +90,7 @@ class sphere : public hittable {
         return uvw.transform(random_to_sphere(radius, distance_squared));
     }
 
+
   private:
     ray center;
     double radius;
@@ -110,6 +111,19 @@ class sphere : public hittable {
         u = phi / (2*pi);
         v = theta / pi;
     }
+
+    static vec3 random_to_sphere(double radius, double distance_squared) {
+        auto r1 = random_double();
+        auto r2 = random_double();
+        auto z = 1 + r2 * (std::sqrt(1 - radius * radius / distance_squared) - 1);
+
+        auto phi = 2 * pi * r1;
+        auto x = std::cos(phi) * std::sqrt(1 - z * z);
+        auto y = std::sin(phi) * std::sqrt(1 - z * z);
+
+        return vec3(x, y, z);
+    }
+
 };
 
 
